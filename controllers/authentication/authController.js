@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express.Router();
 
-let userObj = require('../user/userController');
+let userObj = require('../user/userController').userObj;
 let firebaseAuth = require('../../services/firebase/auth');
 
 class AuthController {
