@@ -5,20 +5,16 @@ const connection = connObj.connection;
 const USER_TABLE = connObj.user_table;
 const USER_BOOKMARK_TABLE = connObj.user_bookmark_table;
 const MOVIE_TABLE = connObj.movie_table;
+const USER_RATING_TABLE = connObj.user_rating_table;
 
 class UserModel {
-  constructor() {
-
-  }
   getUserWithEmail(email) {
     return new Promise((resolve, reject) => {
       let query = `select * from ${USER_TABLE} where email = '${email}'`;
-      console.log(query);
       connection.query(query, function (error, results) {
         if(error) {
           reject(error);
         } else {
-          console.log(results[0]);
           resolve(results[0]);
         }
       });
@@ -31,8 +27,7 @@ class UserModel {
         if(error) {
           reject(error);
         } else {
-          // console.log(results.length);
-          resolve(results);
+          resolve(results.insertId);
         }
       });
     });
@@ -44,7 +39,6 @@ class UserModel {
         if(error) {
           reject(error);
         } else {
-          console.log(results[0]);
           resolve(results[0]);
         }
       });
@@ -58,21 +52,18 @@ class UserModel {
         if(error) {
           reject(error);
         } else {
-          console.log(results.affectedRows);
-          resolve();
+          resolve(userID);
         }
       });
     });
   }
   getUserDetails(userID) {
     return new Promise((resolve, reject) => {
-      console.log(userID);
       let query = `select * from ${USER_TABLE} where user_id = '${userID}'`;
       connection.query(query, function (error, results) {
         if(error) {
           reject(error);
         } else {
-          console.log(results[0]);
           resolve(results[0]);
         }
       });
@@ -108,7 +99,7 @@ class UserModel {
   getBookmark(userID, actionType) {
     return new Promise((resolve, reject) => {
       let query = `SELECT ${MOVIE_TABLE}.movie_id, ${MOVIE_TABLE}.title, ${MOVIE_TABLE}.overview,
-      ${MOVIE_TABLE}.year, ${MOVIE_TABLE}.poster_path
+      ${MOVIE_TABLE}.release_date, ${MOVIE_TABLE}.poster_path, ${USER_BOOKMARK_TABLE}.bookmark_id
       FROM ${MOVIE_TABLE} JOIN ${USER_BOOKMARK_TABLE}
       ON ${MOVIE_TABLE}.movie_id = ${USER_BOOKMARK_TABLE}.movie_id
       WHERE ${USER_BOOKMARK_TABLE}.user_id=${userID} AND
@@ -119,6 +110,36 @@ class UserModel {
           reject(error);
         } else {
           console.log(results.length);
+          resolve(results);
+        }
+      });
+    });
+  }
+  addRating(userRating) {
+    return new Promise((resolve, reject) => {
+      let query = `insert into ${USER_RATING_TABLE} set ?`;
+      connection.query(query, userRating, function (error, results) {
+        if(error) {
+          console.log(error);
+          reject(error);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+  getMovieRating(userID) {
+    return new Promise((resolve, reject) => {
+      let query = `SELECT ${MOVIE_TABLE}.movie_id, ${MOVIE_TABLE}.title, ${MOVIE_TABLE}.overview,
+      ${MOVIE_TABLE}.release_date, ${MOVIE_TABLE}.poster_path, ${USER_RATING_TABLE}.rating
+      FROM ${MOVIE_TABLE} JOIN ${USER_RATING_TABLE}
+      ON ${MOVIE_TABLE}.movie_id = ${USER_RATING_TABLE}.movie_id
+      WHERE ${USER_RATING_TABLE}.user_id=${userID}
+      ORDER BY ${USER_RATING_TABLE}.added_date desc`;
+      connection.query(query, function (error, results) {
+        if(error) {
+          reject(error);
+        } else {
           resolve(results);
         }
       });

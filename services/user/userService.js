@@ -3,9 +3,6 @@
 let userModel = require('../../models/user/user');
 
 class UserService {
-  constructor() {
-
-  }
   checkUserExists(email) {
     return new Promise((resolve, reject) => {
       userModel.getUserWithEmail(email)
@@ -26,10 +23,11 @@ class UserService {
     return new Promise((resolve, reject) => {
       this.checkUserExists(requestData.email)
         .then(() => {
+          requestData.joined_date = new Date();
           return userModel.createUser(requestData);
         })
-        .then(() => {
-          resolve();
+        .then((userID) => {
+          resolve(userID);
         })
         .catch((error) => {
           reject(error);
@@ -50,8 +48,8 @@ class UserService {
             reject(err);
           }
         })
-        .then(() => {
-          resolve();
+        .then((userID) => {
+          resolve(userID);
         })
         .catch((error) => {
           reject(error);
@@ -64,14 +62,14 @@ class UserService {
         .then((userData) => {
           if(userData) {
             // User has logged in before
-            resolve(userData);
+            resolve(userData.user_id);
           } else {
             // First time login
             return this.handleFirstLogin(email, uid);
           }
         })
-        .then(() => {
-          resolve();
+        .then((userID) => {
+          resolve(userID);
         })
         .catch((error) => {
           reject(error);
@@ -82,8 +80,13 @@ class UserService {
     return new Promise((resolve, reject) => {
       userModel.getUserDetails(userID)
         .then((userDetails) => {
-          delete userDetails.uid;
-          resolve(userDetails);
+          if(userDetails) {
+            delete userDetails.uid;
+            resolve(userDetails);
+          } else {
+            let err = new Error('User does not exist');
+            reject(err);
+          }
         })
         .catch((error) => {
           reject(error);
@@ -114,6 +117,34 @@ class UserService {
           .catch((error) => {
             reject(error);
           });
+    });
+  }
+  rateMovie(userID, requestData) {
+    return new Promise((resolve, reject) => {
+      let userRating = {
+        user_id: userID,
+        movie_id: requestData.movie_id,
+        rating: requestData.rating,
+        added_date: new Date()
+      };
+      userModel.addRating(userRating)
+        .then(() => {
+          resolve();
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  }
+  getMovieRating(userID) {
+    return new Promise((resolve, reject) => {
+      userModel.getMovieRating(userID)
+        .then((movieRating) => {
+          resolve(movieRating);
+        })
+        .catch((error) => {
+          reject(error);
+        });
     });
   }
 }

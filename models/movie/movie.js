@@ -66,12 +66,13 @@ class MovieModel {
       });
     });
   }
-  discoverMovies(genreID) {
+  discoverByGenre(genreID) {
     return new Promise((resolve, reject) => {
       let query = `SELECT *
       FROM ${MOVIE_TABLE} JOIN ${MOVIE_GENRE_TABLE}
       ON ${MOVIE_TABLE}.movie_id = ${MOVIE_GENRE_TABLE}.movie_id
-      WHERE ${MOVIE_GENRE_TABLE}.genre_id=${genreID}`;
+      WHERE ${MOVIE_GENRE_TABLE}.genre_id=${genreID}
+      ORDER BY vote_count desc`;
       connection.query(query, function (error, results) {
         if(error) {
           reject(error);
@@ -95,12 +96,13 @@ class MovieModel {
       });
     });
   }
-  searchByKeyword(keywordID) {
+  discoverByKeyword(keywordID) {
     return new Promise((resolve, reject) => {
       let query = `SELECT *
       FROM ${MOVIE_TABLE} JOIN ${MOVIE_KEYWORD_TABLE}
       ON ${MOVIE_TABLE}.movie_id = ${MOVIE_KEYWORD_TABLE}.movie_id
-      WHERE ${MOVIE_KEYWORD_TABLE}.keyword_id=${keywordID}`;
+      WHERE ${MOVIE_KEYWORD_TABLE}.keyword_id=${keywordID}
+      ORDER BY vote_count desc`;
       connection.query(query, function (error, results) {
         if(error) {
           reject(error);
@@ -114,6 +116,19 @@ class MovieModel {
   getMovieStatus() {
     return new Promise((resolve, reject) => {
       let query = `select * from ${MOVIE_STATUS_TABLE}`;
+      connection.query(query, function (error, results) {
+        if(error) {
+          reject(error);
+        } else {
+          console.log(results);
+          resolve(results);
+        }
+      });
+    });
+  }
+  getMovieKeywords(movieID) {
+    return new Promise((resolve, reject) => {
+      let query = `select keyword_id, name from ${MOVIE_KEYWORD_TABLE} where movie_id = ${movieID}`;
       connection.query(query, function (error, results) {
         if(error) {
           reject(error);

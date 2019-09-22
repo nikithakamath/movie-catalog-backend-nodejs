@@ -12,11 +12,11 @@ class FirebaseAuth {
       // Verify it with Firebase
       this.admin.auth().verifyIdToken(accessToken)
         .then((decodedToken) => {
-            resolve(decodedToken.uid);
+          resolve(decodedToken.uid);
         })
         .catch((error) => {
-            reject(error);
-        });      
+          reject(error);
+        });
     });
   }
 }

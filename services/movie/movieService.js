@@ -9,20 +9,27 @@ class MovieService {
   getMovies() {
     return movieModel.getMovies();
   }
+  getMovieRelatedData(movieID) {
+    let promises = [];
+    promises.push(movieModel.getMovieGenres(movieID));
+    promises.push(movieModel.getMovieKeywords(movieID));
+    return Promise.all(promises);
+  }
   getMovieDetails(movieID) {
     return new Promise((resolve, reject) => {
       let finalData;
       movieModel.getMovieDetails(movieID)
         .then((movieDetails) => {
           if (movieDetails) {
-            finalData = movieDetails
-            return movieModel.getMovieGenres(movieDetails.movie_id);
+            finalData = movieDetails;
+            return this.getMovieRelatedData(movieID);
           } else {
             resolve({});
           }
         })
-        .then((movieGenres) => {
-          finalData.genres = movieGenres;
+        .then((result) => {
+          finalData.genres = result[0];
+          finalData.keywords = result[1];
           resolve(finalData);
         })
         .catch((error) => {
@@ -33,30 +40,23 @@ class MovieService {
   listGenres() {
     return movieModel.listGenres();
   }
-  discoverMovies(requestData) {
-    return new Promise((resolve, reject) => {
-      movieModel.discoverMovies(requestData.genre_id)
-        .then((movieList) => {
-          resolve(movieList);
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    });
+  async discoverMovies(requestData) {
+    try {
+      let result;
+      if (requestData.hasOwnProperty('genre_id')) {
+        result = await movieModel.discoverByGenre(requestData.genre_id);
+      } else if(requestData.hasOwnProperty('keyword_id')) {
+        result = await movieModel.discoverByKeyword(requestData.keyword_id);
+      } else {
+        result = await movieModel.getMovies();
+      }
+      return Promise.resolve(result);
+    } catch(error) {
+      return Promise.reject(error);
+    }
   }
   listKeywords() {
     return movieModel.listKeywords();
-  }
-  searchByKeyword(keywordID) {
-    return new Promise((resolve, reject) => {
-      movieModel.searchByKeyword(keywordID)
-        .then((movieList) => {
-          resolve(movieList);
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    });
   }
   getMovieStatus() {
     return movieModel.getMovieStatus();

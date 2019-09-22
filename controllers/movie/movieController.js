@@ -84,21 +84,6 @@ class MovieController {
         });
       });
   }
-  searchByKeyword(request, response) {
-    movieService.searchByKeyword(request.params.keyword_id)
-      .then((movieList) => {
-        response.status(200).json({
-          success: true,
-          data: movieList
-        });
-      })
-      .catch((error) => {
-        response.status(500).json({
-          success: false,
-          data: error
-        });
-      });
-  }
   getMovieStatus(request, response) {
     movieService.getMovieStatus()
       .then((movieStatus) => {
@@ -123,7 +108,6 @@ router.get('/details', movieObj.getMovieDetails);
 router.get('/genre', movieObj.listGenres);
 router.get('/discover', movieObj.discoverMovies);
 router.get('/keyword', movieObj.listKeywords);
-router.get('/keyword/:keyword_id', movieObj.searchByKeyword);
 router.get('/status', movieObj.getMovieStatus);
 
 module.exports.movieObj = movieObj;
