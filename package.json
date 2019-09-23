@@ -1,5 +1,5 @@
 {
-  "name": "movie-catalog",
+  "name": "movie-catalog-backend-nodejs",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nikithakamath/movie-catalog.git"
+    "url": "git+https://github.com/nikithakamath/movie-catalog-backend-nodejs.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/nikithakamath/movie-catalog/issues"
+    "url": "https://github.com/nikithakamath/movie-catalog-backend-nodejs/issues"
   },
-  "homepage": "https://github.com/nikithakamath/movie-catalog#readme",
+  "homepage": "https://github.com/nikithakamath/movie-catalog-backend-nodejs#readme",
   "dependencies": {
     "aws-serverless-express": "^3.3.6",
     "body-parser": "^1.19.0",

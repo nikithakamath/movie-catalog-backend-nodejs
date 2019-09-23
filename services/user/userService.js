@@ -19,11 +19,12 @@ class UserService {
         });
     });
   }
-  signUp(requestData) {
+  signUp(requestData, uid) {
     return new Promise((resolve, reject) => {
       this.checkUserExists(requestData.email)
         .then(() => {
           requestData.joined_date = new Date();
+          requestData.uid = uid;
           return userModel.createUser(requestData);
         })
         .then((userID) => {
@@ -60,12 +61,13 @@ class UserService {
     return new Promise((resolve, reject) => {
       userModel.getUserWithUid(uid)
         .then((userData) => {
-          if(userData) {
-            // User has logged in before
-            resolve(userData.user_id);
+          if(userData && userData.email === email) {
+            // User exists
+            return userData.user_id;
           } else {
-            // First time login
-            return this.handleFirstLogin(email, uid);
+            // User does not exist, deny
+            let err = new Error('User login failed because user does not exist');
+            reject(err);
           }
         })
         .then((userID) => {

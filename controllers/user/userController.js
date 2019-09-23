@@ -9,9 +9,9 @@ let middleware = require('../../middleware/middleware');
 let userService = require('../../services/user/userService');
 
 class UserController {
-  signUp(requestData) {
+  signUp(requestData, uid) {
     return new Promise(function(resolve, reject) {
-      userService.signUp(requestData)
+      userService.signUp(requestData, uid)
         .then((userID) => {
           resolve(userID);
         })

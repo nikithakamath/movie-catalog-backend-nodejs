@@ -21,7 +21,10 @@ class AuthController {
         data: 'Invalid parameters'
       });
     } else {
-      userObj.signUp(request.body)
+      firebaseAuth.verifyUserAuth(request.headers)
+        .then((uid) => {
+          return userObj.signUp(request.body, uid)
+        })
         .then((userID) => {
           let token = jwt.sign({
             user_id: userID,
@@ -56,7 +59,7 @@ class AuthController {
     } else {
       firebaseAuth.verifyUserAuth(request.headers)
         .then((uid) => {
-            return userObj.userLogin(request.body.email, uid);
+          return userObj.userLogin(request.body.email, uid);
         })
         .then((userID) => {
           // No expiry kept for the token

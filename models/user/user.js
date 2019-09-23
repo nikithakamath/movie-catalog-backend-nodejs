@@ -59,7 +59,7 @@ class UserModel {
   }
   getUserDetails(userID) {
     return new Promise((resolve, reject) => {
-      let query = `select * from ${USER_TABLE} where user_id = '${userID}'`;
+      let query = `select * from ${USER_TABLE} where user_id = ${userID}`;
       connection.query(query, function (error, results) {
         if(error) {
           reject(error);
@@ -117,14 +117,43 @@ class UserModel {
   }
   addRating(userRating) {
     return new Promise((resolve, reject) => {
-      let query = `insert into ${USER_RATING_TABLE} set ?`;
-      connection.query(query, userRating, function (error, results) {
-        if(error) {
-          console.log(error);
-          reject(error);
-        } else {
-          resolve();
-        }
+      let insertQuery = `insert into ${USER_RATING_TABLE} set ?`;
+      let readQuery = `select vote_count from ${MOVIE_TABLE} where movie_id=?`
+      let updateQuery = `update ${MOVIE_TABLE} set vote_count=? where movie_id=?`;
+      connection.beginTransaction((err) => {
+        if(err) reject(err);
+        connection.query(insertQuery, userRating, (error, results) => {
+          if(error) {
+            return connection.rollback(() => {
+              reject(error);
+            });
+          }
+          connection.query(readQuery, userRating.movie_id, (error, results) => {
+            if(error) {
+              return connection.rollback(() => {
+                reject(error);
+              });
+            }
+            let newCount = results[0].vote_count + userRating.rating;
+            connection.query(updateQuery, [newCount, userRating.movie_id], (error, results) => {
+              if(error) {
+                return connection.rollback(() => {
+                  reject(error);
+                });
+              }
+              connection.commit((error) => {
+                if (error) {
+                  return connection.rollback(() => {
+                    reject(error);
+                  });
+                } else {
+                  console.log('success!');
+                  resolve();
+                }
+              });
+            });
+          })
+        });
       });
     });
   }
