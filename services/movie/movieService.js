@@ -3,9 +3,6 @@
 let movieModel = require('../../models/movie/movie');
 
 class MovieService {
-  constructor() {
-
-  }
   getMovies() {
     return movieModel.getMovies();
   }
@@ -60,6 +57,20 @@ class MovieService {
   }
   getMovieStatus() {
     return movieModel.getMovieStatus();
+  }
+  addMovie(movieData) {
+    return new Promise((resolve, reject) => {
+      let dateString = movieData.release_date;
+      movieData.release_date = new Date(dateString);
+      movieData.added_date = new Date();
+      movieModel.addMovie(movieData)
+        .then((movieID) => {
+          resolve(movieID);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
   }
 }
 

@@ -29,12 +29,11 @@ class MovieModel {
   }
   getMovieDetails(movieID) {
     return new Promise((resolve, reject) => {
-      let query = `select * from ${MOVIE_TABLE} where movie_id = ${movieID}`;
+      let query = `select *, DATE_FORMAT(release_date,'%d/%m/%Y') as release_date from ${MOVIE_TABLE} where movie_id = ${movieID}`;
       connection.query(query, function (error, results) {
         if(error) {
           reject(error);
         } else {
-          console.log(results[0]);
           resolve(results[0]);
         }
       });
@@ -135,6 +134,18 @@ class MovieModel {
         } else {
           console.log(results);
           resolve(results);
+        }
+      });
+    });
+  }
+  addMovie(movieData) {
+    return new Promise((resolve, reject) => {
+      let query = `insert into ${MOVIE_TABLE} set ?`;
+      connection.query(query, movieData, function (error, results) {
+        if(error) {
+          reject(error);
+        } else {
+          resolve(results.insertId);
         }
       });
     });

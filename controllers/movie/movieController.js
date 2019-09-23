@@ -6,9 +6,6 @@ const router = express.Router();
 let movieService = require('../../services/movie/movieService');
 
 class MovieController {
-  constructor() {
-
-  }
   getMovies(request, response) {
     movieService.getMovies()
       .then((movieList) => {
@@ -99,6 +96,22 @@ class MovieController {
         });
       });
   }
+  addMovie(request, response) {
+    movieService.addMovie(request.body)
+      .then((movieID) => {
+        response.status(201).json({
+          success: true,
+          data: movieID
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        response.status(500).json({
+          success: false,
+          data: error
+        });
+      });
+  }
 }
 
 let movieObj = new MovieController();
@@ -109,6 +122,7 @@ router.get('/genre', movieObj.listGenres);
 router.get('/discover', movieObj.discoverMovies);
 router.get('/keyword', movieObj.listKeywords);
 router.get('/status', movieObj.getMovieStatus);
+router.post('/', movieObj.addMovie);
 
 module.exports.movieObj = movieObj;
 module.exports.router = router;
