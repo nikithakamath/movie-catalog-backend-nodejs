@@ -27,13 +27,13 @@ connection.on('disconnect', (err) => {
 
 module.exports = {
   connection: connection,
-  movie_table: 'movie2',
+  movie_table: 'movie',
   genre_table: 'genre',
-  movie_genre_table: 'movie1_genre',
+  movie_genre_table: 'movie_genre',
   keyword_table: 'keyword',
-  movie_keyword_table: 'movie1_keyword',
-  user_table: 'user3',
-  user_bookmark_table: 'user_bookmark1',
+  movie_keyword_table: 'movie_keyword',
+  user_table: 'user',
+  user_bookmark_table: 'user_bookmark',
   movie_status_table: 'movie_status',
-  user_rating_table: 'user_rating1'
+  user_rating_table: 'user_rating'
 };
